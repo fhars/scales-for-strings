@@ -1,0 +1,13 @@
+OASISFormat: 0.3
+Name:        Scales
+Version:     0.1
+Synopsis:    An interactive scale explorer
+Authors:     FLorian Hars
+License:     BSD3
+
+Executable scales
+  Path:       .
+  BuildTools: ocamlbuild
+#  BuildDepends: js_of_ocaml
+  CompiledObject: native
+  MainIs:     Scales.ml
