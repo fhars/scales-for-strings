@@ -20,10 +20,7 @@ let fret_for_note str note =
   if f < 0 then f + 12 else f
 
 let base_notes instrument key =
-  List.sort compare 
-    (List.mapi 
-      (fun str tuning -> (fret_for_note tuning key, str))
-      instrument)
+  List.map (fun str -> fret_for_note str key) instrument
 
 let transpose key scale =
   List.map (fun note -> note + key) scale
