@@ -63,9 +63,4 @@ let filtered_notes instrument scale key offset =
   let effective_instr = transpose offset instrument in
   let notes = all_notes effective_instr scale key in
   List.map (transpose offset) (filter notes effective_instr (max_diff instrument))
-
-let _ =
-  let (_, _, scale) = List.nth scales 1 in
-  let notes = filtered_notes guitar6 scale 4 2 in
-  List.iter (fun frets -> List.iter (fun n -> Printf.printf " %d" n) frets; print_endline "") notes
     
