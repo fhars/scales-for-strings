@@ -1,3 +1,25 @@
+(* Copyright (c) 2013 Florian Hars
+
+   Permission is hereby granted, free of charge, to any person obtaining
+   a copy of this software and associated documentation files (the
+   "Software"), to deal in the Software without restriction, including
+   without limitation the rights to use, copy, modify, merge, publish,
+   distribute, sublicense, and/or sell copies of the Software, and to
+   permit persons to whom the Software is furnished to do so, subject to
+   the following conditions:
+
+   The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+   NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+   BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+   ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+   SOFTWARE.
+*)
+
 let scales = [|
   "Lydian",     5, [ 0; 2; 4; 6; 7; 9; 11 ];
   "Ionian",     0, [ 0; 2; 4; 5; 7; 9; 11 ];
@@ -9,7 +31,7 @@ let scales = [|
   "Lydian 7b",  5, [ 0; 2; 4; 6; 7; 9; 10 ];
   "Altered",    -1, [ 0; 1; 3; 4; 5; 8; 10 ];
   "Sym Dim",   -1, [ 0; 1; 3; 4; 6; 7; 9; 10 ]
-|] 
+	     |] 
 
 let keys = [| "C"; "Db"; "D"; "Eb"; "E"; "F"; "F#/Gb"; "G"; "Ab"; "A"; "Bb"; "B" |]
 
@@ -27,7 +49,7 @@ let instruments = [|
   "Ukulele (D)", [ 69; 74; 78; 83 ];
   "Violin", [67; 74; 81; 88];
   "Tenor Banjo", banjo4
-|]
+		  |]
 
 let fret_for_note str note =
   let f = (note - str) mod 12 in
@@ -44,7 +66,7 @@ let transpose_raw key scale =
 
 module S = Set.Make(struct type t = int let compare = compare end)
 let of_list = List.fold_left (fun i s -> S.add s i) S.empty
- 
+  
 let notes_on_string str scale =
   let frets = List.fold_right 
     (fun note frets -> 
@@ -58,15 +80,15 @@ let all_notes instrument scale key =
 
 let max_diff instrument =
   let rec m_d_r acc last = function
-  | [] -> acc
-  | str::l ->
-    m_d_r (max acc (str - last)) str l
+    | [] -> acc
+    | str::l ->
+      m_d_r (max acc (str - last)) str l
   in
   match instrument with
   | [] -> -1
   | [_] -> 12
   | str::l ->  
-      m_d_r (-1) str l
+    m_d_r (-1) str l
 
 let less n = List.filter (fun i -> i < n)
 
