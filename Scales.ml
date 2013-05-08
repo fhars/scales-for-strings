@@ -29,6 +29,9 @@ let base_notes instrument key =
   List.map (fun str -> fret_for_note str key) instrument
 
 let transpose key scale =
+  List.map (fun note -> let n = (note + key) mod 12 in if n < 12 then n + 12 else n) scale
+
+let transpose_raw key scale =
   List.map (fun note -> note + key) scale
 
 module S = Set.Make(struct type t = int let compare = compare end)
@@ -67,12 +70,11 @@ let rec filter notes instrument max_diff =
   | _ -> assert(false)
 
 let filtered_notes instrument scale key offset =
-  let effective_instr = transpose offset instrument in
-  let notes = all_notes effective_instr scale key 
+  let notes = all_notes instrument scale key 
   and width = max_diff instrument in
-  width, notes, List.map (transpose offset) (filter notes effective_instr width)
+  width, notes, List.map (fun l -> List.sort compare (transpose_raw offset l)) (filter (List.map (transpose (-offset)) notes) instrument width)
     
 let generate_scale instrument key scale offset =
-  let width, notes, filtered = filtered_notes instrument scale key 0
+  let width, notes, filtered = filtered_notes instrument scale key offset
   and base = base_notes instrument key in
   width, List.map of_list notes, filtered, base
