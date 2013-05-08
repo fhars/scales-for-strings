@@ -1,4 +1,4 @@
-let scales = [
+let scales = [|
   "Lydian",     5, [ 0; 2; 4; 6; 7; 9; 11 ];
   "Ionian",     0, [ 0; 2; 4; 5; 7; 9; 11 ];
   "Mixolydian", 7, [ 0; 2; 4; 5; 7; 9; 10 ];
@@ -9,11 +9,17 @@ let scales = [
   "Lydian 7b",  5, [ 0; 2; 4; 6; 7; 9; 10 ];
   "Alterd",    -1, [ 0; 1; 3; 4; 5; 8; 10 ];
   "Sym Dim",   -1, [ 0; 1; 3; 4; 6; 7; 9; 10 ]
-] 
+|] 
 
+let keys = [| "C"; "C#"; "D"; "Eb"; "E"; "F"; "F#"; "G"; "Ab"; "A"; "Bb"; "B" |]
 
 let guitar6 = [ 52; 57; 62; 67; 71; 76 ]
 let banjo4 = [60; 67; 74; 81]
+
+let instruments = [|
+  "Guitar", guitar6;
+  "Tenor Banjo", banjo4
+|]
 
 let fret_for_note str note =
   let f = (note - str) mod 12 in
@@ -26,7 +32,8 @@ let transpose key scale =
   List.map (fun note -> note + key) scale
 
 module S = Set.Make(struct type t = int let compare = compare end)
-
+let of_list = List.fold_left (fun i s -> S.add s i) S.empty
+ 
 let notes_on_string str scale =
   let frets = List.fold_right 
     (fun note frets -> 
@@ -61,6 +68,11 @@ let rec filter notes instrument max_diff =
 
 let filtered_notes instrument scale key offset =
   let effective_instr = transpose offset instrument in
-  let notes = all_notes effective_instr scale key in
-  List.map (transpose offset) (filter notes effective_instr (max_diff instrument))
+  let notes = all_notes effective_instr scale key 
+  and width = max_diff instrument in
+  width, notes, List.map (transpose offset) (filter notes effective_instr width)
     
+let generate_scale instrument key scale offset =
+  let width, notes, filtered = filtered_notes instrument scale key 0
+  and base = base_notes instrument key in
+  width, List.map of_list notes, filtered, base

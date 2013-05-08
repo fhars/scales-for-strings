@@ -10,3 +10,10 @@ Executable scales
   BuildTools: ocamlbuild
   CompiledObject: byte
   MainIs:     Main.ml
+
+Executable web
+  Path:       .
+  BuildTools: ocamlbuild
+  BuildDepends: js_of_ocaml,js_of_ocaml.syntax
+  CompiledObject: byte
+  MainIs:     Webscales.ml
