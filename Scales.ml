@@ -18,6 +18,14 @@ let banjo4 = [60; 67; 74; 81]
 
 let instruments = [|
   "Guitar", guitar6;
+  "Guitar (open D)", [50; 57; 62; 66; 69; 74];
+  "Guitar (open G)", [50; 55; 62; 67; 71; 74];
+  "Guitar (drop D)", [ 50; 57; 62; 67; 71; 76 ];
+  "Guitar (modal)", [ 50; 57; 62; 67; 69; 74 ];
+  "Guitar (NST)", [ 48; 55; 62; 69; 76; 79 ];
+  "Ukulele (C)", [ 67; 72; 76; 81 ];
+  "Ukulele (D)", [ 69; 74; 78; 83 ];
+  "Violin", [67; 74; 81; 88];
   "Tenor Banjo", banjo4
 |]
 
