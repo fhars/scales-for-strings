@@ -15,18 +15,65 @@ let clear_children elt =
 let value_or_zero elt =
   try int_of_string (Js.to_string elt##value) with _ -> 0
 
+let rec draw_frets document tr length fret base notes filtered =
+  if fret <= length then
+    let td = Html.createTd document in
+    td##className <- js "fret";
+    Dom.appendChild tr td;
+    let f' = match filtered with
+      | n :: f' when n == fret ->
+	append_text document td (if fret mod 12 == base then "X" else "O");
+	f'
+      | _ ->
+	append_text document td (if S.mem (fret mod 12) notes then "o" else "-");
+	filtered
+    in
+    draw_frets document tr length (fret + 1) base notes f'
+
+let draw_row document tbody length instrument base notes filtered =
+  let tr = Html.createTr document
+  and td = Html.createTd document in
+  append_text document td keys.(instrument mod 12);
+  Dom.appendChild tbody tr;
+  Dom.appendChild tr td;
+  let td = Html.createTd document in
+  td##className <- js "nut";
+  Dom.appendChild tr td;
+  let f' = match filtered with
+    | 0 :: f' ->
+      append_text document td (if base == 0 then "X" else "O");
+      f'
+    | _ ->
+      if S.mem 0 notes then
+	append_text document td "o"
+      else
+	append_text document td "-";
+      filtered
+  in
+  draw_frets document tr length 1 base notes f'
+
+let rec draw_rows document tbody length instrument base notes filtered =
+  match instrument, base, notes, filtered with
+  | i::is, b::bs, n::ns, f::fs ->
+    draw_row document tbody length i b n f;
+    draw_rows document tbody length is bs ns fs
+  | _ -> ()
+
 let draw_scale document table key' scale' fret' instr' _ =
   let tbody = Html.createTbody document in
   let key = value_or_zero key'
-  and scale = value_or_zero scale'
+  and name, _, scale = scales.(value_or_zero scale')
   and fret = value_or_zero fret'
-  and instrument = value_or_zero instr' in
-  let tr = Html.createTr document in
-  let td = Html.createTd document in
-  let s = Printf.sprintf "%d %d %d %d" key scale fret instrument in
-  append_text document td s;
-  Dom.appendChild tr td;
-  Dom.appendChild tbody tr;
+  and instr_name, instrument = instruments.(value_or_zero instr')
+  and left_handed = false in
+  let width, notes, filtered, base = generate_scale instrument key scale fret in
+  let notes, filtered, base, instrument =
+    if left_handed then
+      notes, filtered, base, instrument
+    else
+      List.rev notes, List.rev filtered, List.rev base, List.rev instrument
+  in
+  draw_rows document tbody (fret + width) instrument base notes filtered;
   clear_children table;
   Dom.appendChild table tbody;
   Js._false
@@ -75,9 +122,10 @@ let _ =
   done;
   Dom.appendChild control instrument;
   let redraw = draw_scale d result key scale fret instrument in
-  key##onchange <- (Html.handler redraw);
-  scale##onchange <- (Html.handler redraw);
-  fret##onchange <- (Html.handler redraw);
-  instrument##onchange <- (Html.handler redraw);
+  key##onchange <- (Html.handler (fun _ -> redraw ()));
+  scale##onchange <- (Html.handler (fun _ -> redraw ()));
+  fret##onchange <- (Html.handler (fun _ -> redraw ()));
+  instrument##onchange <- (Html.handler (fun _ -> redraw ()));
+  redraw ()
 
      
