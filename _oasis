@@ -3,7 +3,7 @@ Name:        Scales
 Version:     0.1
 Synopsis:    An interactive scale explorer
 Authors:     FLorian Hars
-License:     BSD3
+License:     MIT
 
 Executable scales
   Path:       .
