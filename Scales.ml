@@ -37,7 +37,7 @@ let base_notes instrument key =
   List.map (fun str -> fret_for_note str key) instrument
 
 let transpose key scale =
-  List.map (fun note -> let n = (note + key) mod 12 in if n < 12 then n + 12 else n) scale
+  List.map (fun note -> let n = (note + key) mod 12 in if n < 0 then n + 12 else n) scale
 
 let transpose_raw key scale =
   List.map (fun note -> note + key) scale
