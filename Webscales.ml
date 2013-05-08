@@ -73,7 +73,20 @@ let draw_scale document table key' scale' fret' instr' _ =
     else
       List.rev notes, List.rev filtered, List.rev base, List.rev instrument
   in
-  draw_rows document tbody (fret + width) instrument base notes filtered;
+  let length = fret + width in
+  let tr = Html.createTr document
+  and td = Html.createTd document in
+  Dom.appendChild tr td;
+  let td = Html.createTd document in
+  Dom.appendChild tr td;
+  for k = 1 to length do
+    let td = Html.createTd document in
+    td##className <- js "hd";
+    append_text document td (string_of_int k);
+    Dom.appendChild tr td
+  done;
+  Dom.appendChild tbody tr;
+  draw_rows document tbody length instrument base notes filtered;
   clear_children table;
   Dom.appendChild table tbody;
   Js._false
