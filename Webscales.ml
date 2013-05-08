@@ -22,10 +22,10 @@ let rec draw_frets document tr length fret base notes filtered =
     Dom.appendChild tr td;
     let f' = match filtered with
       | n :: f' when n == fret ->
-	append_text document td (if fret mod 12 == base then "X" else "O");
+	append_text document td (if fret mod 12 == base then "◉" else "●");
 	f'
       | _ ->
-	append_text document td (if S.mem (fret mod 12) notes then "o" else "-");
+	append_text document td (if S.mem (fret mod 12) notes then "◌" else "·");
 	filtered
     in
     draw_frets document tr length (fret + 1) base notes f'
@@ -41,13 +41,13 @@ let draw_row document tbody length instrument base notes filtered =
   Dom.appendChild tr td;
   let f' = match filtered with
     | 0 :: f' ->
-      append_text document td (if base == 0 then "X" else "O");
+      append_text document td (if base == 0 then "◉" else "●");
       f'
     | _ ->
       if S.mem 0 notes then
-	append_text document td "o"
+	append_text document td "◌"
       else
-	append_text document td "-";
+	append_text document td "·";
       filtered
   in
   draw_frets document tr length 1 base notes f'
