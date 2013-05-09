@@ -25,6 +25,9 @@ module Html = Dom_html
 
 open Scales
 
+let open_numbers = [| "·";"➀";"➁";"➂";"➃";"➄";"➅";"➆";"➇";"➈";"➉" |]
+let black_numbers = [| "X";"✪";"➋";"➌";"➍";"➎";"➏";"➐";"➑";"➒";"➓" |]
+
 let js = Js.string
 let append_text document e s = Dom.appendChild e (document##createTextNode (js s))
 let set_value e v = e##value##set (js (string_of_int v)) 
@@ -38,22 +41,22 @@ let clear_children elt =
 let value_or_zero elt =
   try int_of_string (Js.to_string elt##value) with _ -> 0
 
-let rec draw_frets document tr length fret base notes filtered =
+let rec draw_frets document nrs str tr length fret base filtered =
   if fret <= length then
     let td = Html.createTd document in
     td##className <- js "fret";
     Dom.appendChild tr td;
     let f' = match filtered with
       | n :: f' when n == fret ->
-	append_text document td (if fret mod 12 == base then "◉" else "●");
+	append_text document td black_numbers.(nrs.((str+ fret) mod 12));
 	f'
       | _ ->
-	append_text document td (if S.mem (fret mod 12) notes then "◌" else "·");
+	append_text document td open_numbers.(nrs.((str+ fret) mod 12));
 	filtered
     in
-    draw_frets document tr length (fret + 1) base notes f'
+    draw_frets document nrs str tr length (fret + 1) base f'
 
-let draw_row document tbody length instrument base notes filtered =
+let draw_row document tbody nrs length instrument base filtered =
   let tr = Html.createTr document
   and td = Html.createTd document in
   append_text document td keys.(instrument mod 12);
@@ -64,22 +67,19 @@ let draw_row document tbody length instrument base notes filtered =
   Dom.appendChild tr td;
   let f' = match filtered with
     | 0 :: f' ->
-      append_text document td (if base == 0 then "◉" else "●");
+      append_text document td black_numbers.(nrs.(instrument mod 12));
       f'
     | _ ->
-      if S.mem 0 notes then
-	append_text document td "◌"
-      else
-	append_text document td "·";
+      append_text document td open_numbers.(nrs.(instrument mod 12));
       filtered
   in
-  draw_frets document tr length 1 base notes f'
+  draw_frets document nrs instrument tr length 1 base f'
 
-let rec draw_rows document tbody length instrument base notes filtered =
-  match instrument, base, notes, filtered with
-  | i::is, b::bs, n::ns, f::fs ->
-    draw_row document tbody length i b n f;
-    draw_rows document tbody length is bs ns fs
+let rec draw_rows document tbody nrs length instrument base filtered =
+  match instrument, base, filtered with
+  | i::is, b::bs, f::fs ->
+    draw_row document tbody nrs length i b f;
+    draw_rows document tbody nrs length is bs fs
   | _ -> ()
 
 let draw_scale document table key' scale' fret' instr' _ =
@@ -90,6 +90,8 @@ let draw_scale document table key' scale' fret' instr' _ =
   and instr_name, instrument = instruments.(value_or_zero instr')
   and left_handed = false in
   let width, notes, filtered, base = generate_scale instrument key scale fret in
+  let nrs = Array.create 12 0 in
+  List.iteri (fun i off -> let ix = (key + off) mod 12 in nrs.(ix) <- i + 1) scale;
   let notes, filtered, base, instrument =
     if left_handed then
       notes, filtered, base, instrument
@@ -110,7 +112,7 @@ let draw_scale document table key' scale' fret' instr' _ =
     Dom.appendChild tr td
   done;
   Dom.appendChild tbody tr;
-  draw_rows document tbody length instrument base notes filtered;
+  draw_rows document tbody nrs length instrument base filtered;
   clear_children table;
   Dom.appendChild table tbody;
   Js._false
