@@ -105,6 +105,7 @@ let draw_scale document table key' scale' fret' instr' _ =
   for k = 1 to length do
     let td = Html.createTd document in
     td##className <- js "hd";
+    td##style##width <- js (Printf.sprintf "%dpx" (40 - k));
     append_text document td (string_of_int k);
     Dom.appendChild tr td
   done;
