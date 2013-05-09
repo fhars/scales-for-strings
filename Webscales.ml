@@ -96,7 +96,7 @@ let draw_scale document table key' scale' fret' instr' _ =
     else
       List.rev notes, List.rev filtered, List.rev base, List.rev instrument
   in
-  let length = fret + width in
+  let length = max 19 (fret + width) in
   let tr = Html.createTr document
   and td = Html.createTd document in
   Dom.appendChild tr td;
