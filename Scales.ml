@@ -105,14 +105,9 @@ let rec filter notes instrument max_diff skip accum_skip =
   | str::(str' :: _ as strs') -> 
     in_range (accum_skip + str) (str' - str + skip) notes :: filter notes strs' max_diff skip (accum_skip + skip)
 
-let filtered_notes instrument scale key offset skip =
+
+let generate_scale instrument key scale offset skip =
   let notes = of_list (transpose key scale)
   and width = max_diff instrument in
-  let filtered = filter notes instrument width skip offset
-  in
+  let filtered = filter notes instrument width skip offset in
   width, filtered
-    
-let generate_scale instrument key scale offset skip =
-  let width, filtered = filtered_notes instrument scale key offset skip
-  and notes = transpose_raw key scale in
-  width, notes, filtered

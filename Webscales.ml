@@ -46,12 +46,13 @@ let rec draw_frets document nrs str tr length fret filtered =
     let td = Html.createTd document in
     td##className <- js "fret";
     Dom.appendChild tr td;
+    let note = fret + str in
     let f' = match filtered with
-      | n :: f' when n == fret ->
-	append_text document td black_numbers.(nrs.((str+ fret) mod 12));
+      | n :: f' when n = note ->
+	append_text document td black_numbers.(nrs.(note mod 12));
 	f'
       | _ ->
-	append_text document td open_numbers.(nrs.((str+ fret) mod 12));
+	append_text document td open_numbers.(nrs.(note mod 12));
 	filtered
     in
     draw_frets document nrs str tr length (fret + 1) f'
@@ -66,7 +67,7 @@ let draw_row document tbody nrs length instrument filtered =
   td##className <- js "nut";
   Dom.appendChild tr td;
   let f' = match filtered with
-    | 0 :: f' ->
+    | k :: f' when k == instrument ->
       append_text document td black_numbers.(nrs.(instrument mod 12));
       f'
     | _ ->
@@ -90,7 +91,7 @@ let draw_scale document table key' scale' fret' instr' skip' _ =
   and instr_name, instrument = instruments.(value_or_zero instr')
   and skip = value_or_zero skip'
   and left_handed = false in
-  let width, notes, filtered = generate_scale instrument key scale fret skip in
+  let width, filtered = generate_scale instrument key scale fret skip in
   let nrs = Array.create 12 0 in
   List.iteri (fun i off -> let ix = (key + off) mod 12 in nrs.(ix) <- i + 1) scale;
   let filtered, instrument =
