@@ -90,21 +90,29 @@ let max_diff instrument =
   | str::l ->  
     m_d_r (-1) str l
 
-let less n = List.filter (fun i -> i < n)
+let rec range from width =
+  if width > 0 then
+    from :: range (from + 1) (width - 1)
+  else
+    []
 
-let rec filter notes instrument max_diff =
-  match notes, instrument with
-  | [], [] -> []
-  | [ns], [str] -> [less max_diff ns]
-  | ns::notes', str::(str' :: _ as strs') -> less (str' - str) ns :: filter notes' strs' max_diff
-  | _ -> assert(false)
+let in_range from width notes = List.filter (fun i -> S.mem (i mod 12) notes) (range from width)
 
-let filtered_notes instrument scale key offset =
-  let notes = all_notes instrument scale key 
+let rec filter notes instrument max_diff skip accum_skip =
+  match instrument with
+  | [] -> []
+  | [str] -> [in_range (accum_skip + str) (max_diff + skip) notes]
+  | str::(str' :: _ as strs') -> 
+    in_range (accum_skip + str) (str' - str + skip) notes :: filter notes strs' max_diff skip (accum_skip + skip)
+
+let filtered_notes instrument scale key offset skip =
+  let notes = of_list (transpose key scale)
   and width = max_diff instrument in
-  width, notes, List.map (fun l -> List.sort compare (transpose_raw offset l)) (filter (List.map (transpose (-offset)) notes) instrument width)
+  let filtered = filter notes instrument width skip offset
+  in
+  width, notes, filtered
     
-let generate_scale instrument key scale offset =
-  let width, notes, filtered = filtered_notes instrument scale key offset
+let generate_scale instrument key scale offset skip =
+  let width, notes, filtered = filtered_notes instrument scale key offset skip
   and base = base_notes instrument key in
-  width, List.map of_list notes, filtered, base
+  width, notes, filtered, base

@@ -82,21 +82,22 @@ let rec draw_rows document tbody nrs length instrument base filtered =
     draw_rows document tbody nrs length is bs fs
   | _ -> ()
 
-let draw_scale document table key' scale' fret' instr' _ =
+let draw_scale document table key' scale' fret' instr' skip' _ =
   let tbody = Html.createTbody document in
   let key = value_or_zero key'
   and name, _, scale = scales.(value_or_zero scale')
   and fret = value_or_zero fret'
   and instr_name, instrument = instruments.(value_or_zero instr')
+  and skip = value_or_zero skip'
   and left_handed = false in
-  let width, notes, filtered, base = generate_scale instrument key scale fret in
+  let width, notes, filtered, base = generate_scale instrument key scale fret skip in
   let nrs = Array.create 12 0 in
   List.iteri (fun i off -> let ix = (key + off) mod 12 in nrs.(ix) <- i + 1) scale;
-  let notes, filtered, base, instrument =
+  let filtered, base, instrument =
     if left_handed then
-      notes, filtered, base, instrument
+      filtered, base, instrument
     else
-      List.rev notes, List.rev filtered, List.rev base, List.rev instrument
+      List.rev filtered, List.rev base, List.rev instrument
   in
   let length = max 19 (fret + width) in
   let tr = Html.createTr document
@@ -151,6 +152,7 @@ let _ =
     Dom.appendChild fret s
   done;
   Dom.appendChild control fret;
+
   let instrument = Html.createSelect ~name:(Js.string "instrument") d in
   for k = 0 to Array.length instruments - 1  do
     let name, _ = instruments.(k) in
@@ -160,11 +162,23 @@ let _ =
     Dom.appendChild instrument s
   done;
   Dom.appendChild control instrument;
-  let redraw = draw_scale d result key scale fret instrument in
+
+  let skip = Html.createSelect ~name:(Js.string "skip") d in
+  for k = 0 to 5  do
+    let s = Html.createOption d in
+    let v = string_of_int k in
+    append_text d s v;
+    s##value <- js v;
+    Dom.appendChild skip s
+  done;
+  Dom.appendChild control skip;
+
+  let redraw = draw_scale d result key scale fret instrument skip in
   key##onchange <- (Html.handler (fun _ -> redraw ()));
   scale##onchange <- (Html.handler (fun _ -> redraw ()));
   fret##onchange <- (Html.handler (fun _ -> redraw ()));
   instrument##onchange <- (Html.handler (fun _ -> redraw ()));
+  skip##onchange <- (Html.handler (fun _ -> redraw ()));
   redraw ()
 
      
