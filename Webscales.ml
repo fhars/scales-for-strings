@@ -41,7 +41,7 @@ let clear_children elt =
 let value_or_zero elt =
   try int_of_string (Js.to_string elt##value) with _ -> 0
 
-let rec draw_frets document nrs str tr length fret base filtered =
+let rec draw_frets document nrs str tr length fret filtered =
   if fret <= length then
     let td = Html.createTd document in
     td##className <- js "fret";
@@ -54,9 +54,9 @@ let rec draw_frets document nrs str tr length fret base filtered =
 	append_text document td open_numbers.(nrs.((str+ fret) mod 12));
 	filtered
     in
-    draw_frets document nrs str tr length (fret + 1) base f'
+    draw_frets document nrs str tr length (fret + 1) f'
 
-let draw_row document tbody nrs length instrument base filtered =
+let draw_row document tbody nrs length instrument filtered =
   let tr = Html.createTr document
   and td = Html.createTd document in
   append_text document td keys.(instrument mod 12);
@@ -73,13 +73,13 @@ let draw_row document tbody nrs length instrument base filtered =
       append_text document td open_numbers.(nrs.(instrument mod 12));
       filtered
   in
-  draw_frets document nrs instrument tr length 1 base f'
+  draw_frets document nrs instrument tr length 1 f'
 
-let rec draw_rows document tbody nrs length instrument base filtered =
-  match instrument, base, filtered with
-  | i::is, b::bs, f::fs ->
-    draw_row document tbody nrs length i b f;
-    draw_rows document tbody nrs length is bs fs
+let rec draw_rows document tbody nrs length instrument filtered =
+  match instrument, filtered with
+  | i::is, f::fs ->
+    draw_row document tbody nrs length i f;
+    draw_rows document tbody nrs length is fs
   | _ -> ()
 
 let draw_scale document table key' scale' fret' instr' skip' _ =
@@ -90,14 +90,14 @@ let draw_scale document table key' scale' fret' instr' skip' _ =
   and instr_name, instrument = instruments.(value_or_zero instr')
   and skip = value_or_zero skip'
   and left_handed = false in
-  let width, notes, filtered, base = generate_scale instrument key scale fret skip in
+  let width, notes, filtered = generate_scale instrument key scale fret skip in
   let nrs = Array.create 12 0 in
   List.iteri (fun i off -> let ix = (key + off) mod 12 in nrs.(ix) <- i + 1) scale;
-  let filtered, base, instrument =
+  let filtered, instrument =
     if left_handed then
-      filtered, base, instrument
+      filtered, instrument
     else
-      List.rev filtered, List.rev base, List.rev instrument
+      List.rev filtered, List.rev instrument
   in
   let length = max 19 (fret + width) in
   let tr = Html.createTr document
@@ -113,7 +113,7 @@ let draw_scale document table key' scale' fret' instr' skip' _ =
     Dom.appendChild tr td
   done;
   Dom.appendChild tbody tr;
-  draw_rows document tbody nrs length instrument base filtered;
+  draw_rows document tbody nrs length instrument filtered;
   clear_children table;
   Dom.appendChild table tbody;
   Js._false

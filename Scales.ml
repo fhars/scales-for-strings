@@ -110,9 +110,9 @@ let filtered_notes instrument scale key offset skip =
   and width = max_diff instrument in
   let filtered = filter notes instrument width skip offset
   in
-  width, notes, filtered
+  width, filtered
     
 let generate_scale instrument key scale offset skip =
-  let width, notes, filtered = filtered_notes instrument scale key offset skip
-  and base = base_notes instrument key in
-  width, notes, filtered, base
+  let width, filtered = filtered_notes instrument scale key offset skip
+  and notes = transpose_raw key scale in
+  width, notes, filtered
