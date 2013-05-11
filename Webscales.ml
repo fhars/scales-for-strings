@@ -34,7 +34,7 @@ let set_value e v = e##value##set (js (string_of_int v))
 
 let clear_children elt =
   let c = elt##childNodes in
-  for i = 0 to c##length - 1 do
+  for i = c##length - 1 downto 0 do
     Js.Opt.iter (c##item (i)) (fun node -> Dom.removeChild elt node)
   done
 
@@ -83,14 +83,51 @@ let rec draw_rows document tbody nrs length instrument filtered =
     draw_rows document tbody nrs length is fs
   | _ -> ()
 
-let draw_scale document table key' scale' fret' instr' skip' _ =
+let concat delim l =
+  let rec concat_r acc l =
+    match l with
+    | [] -> acc
+    | s::l' -> concat_r (s ^ delim ^ acc) l'
+  in
+  match l with
+  | [] -> ""
+  | s::l' -> concat_r s l'
+
+let draw_scale document table link key' scale' fret' instr' skip' _ =
   let tbody = Html.createTbody document in
   let key = value_or_zero key'
-  and name, _, scale = scales.(value_or_zero scale')
+  and scale_nr = value_or_zero scale'
+  and instr = value_or_zero instr'
   and fret = value_or_zero fret'
-  and instr_name, instrument = instruments.(value_or_zero instr')
-  and skip = value_or_zero skip'
+  and skip = value_or_zero skip' in
+
+  let name, _, scale = scales.(scale_nr)
+  and instr_name, instrument = instruments.(instr)
   and left_handed = false in
+
+  let settings = ref [] in
+  if key <> 0 then
+    settings := ("key=" ^ (string_of_int key)) :: !settings;
+  if scale_nr <> 0 then
+    settings := ("scale=" ^ (string_of_int scale_nr)) :: !settings;
+  if instr <> 0 then
+    settings := ("instr=" ^ (string_of_int instr)) :: !settings;
+  if fret <> 0 then
+    settings := ("fret=" ^ (string_of_int fret)) :: !settings;
+  if skip <> 0 then
+    settings := ("skip=" ^ (string_of_int skip)) :: !settings;
+  let frag = js ("#" ^ (concat "," !settings)) in
+  link##href <- frag;
+  let h = Html.window##location##hash in
+  let h = if Js.to_string h = "" then js "#" else h in
+  if (h <> frag) then (
+    let hist_title = js (keys.(key) ^ " " ^ name ^ ", " ^ instr_name ^ ", fret " ^ (string_of_int fret)) in
+    Html.window##document##title <- hist_title;
+    (try
+       Html.window##history##pushState((),hist_title,(Js.some frag))
+     with
+     | _ -> () (* Stupid old IE *)
+    ));
   let width, filtered = generate_scale instrument key scale fret skip in
   let nrs = Array.create 12 0 in
   List.iteri (fun i off -> let ix = (key + off) mod 12 in nrs.(ix) <- i + 1) scale;
@@ -100,7 +137,7 @@ let draw_scale document table key' scale' fret' instr' skip' _ =
     else
       List.rev filtered, List.rev instrument
   in
-  let length = max 19 (fret + width) in
+  let length = max 19 (fret + width + skip * (List.length instrument)) in
   let tr = Html.createTr document
   and td = Html.createTd document in
   Dom.appendChild tr td;
@@ -119,7 +156,52 @@ let draw_scale document table key' scale' fret' instr' skip' _ =
   Dom.appendChild table tbody;
   Js._false
 
-let _ =
+let split delim s =
+  let rec split_r acc s =
+    let pos = try Some (String.index s delim) with Not_found -> None in
+    match pos with
+    | None -> List.rev (s :: acc)
+    | Some i -> split_r (String.sub s 0 i :: acc) (String.sub s (i + 1) (String.length s - i -1))
+  in
+  split_r [] s
+
+let sel_key = ref 0
+and sel_scale = ref 0
+and sel_fret = ref 0
+and sel_instr = ref 0
+and sel_skip = ref 0
+
+let parse_fragment () =
+  sel_key := 0;
+  sel_scale := 0;
+  sel_fret := 0;
+  sel_instr := 0;
+  sel_skip := 0;
+  let frag = Js.to_string Html.window##location##hash in
+  let frag = if String.length frag > 1 then String.sub frag 1 (String.length frag - 1) else frag in
+  let fields = List.map (split '=') (split ',' frag) in
+  List.iter (fun l ->
+    match l with
+    | f :: vs :: [] -> (
+      try
+	let v = int_of_string vs in
+	if v >= 0 then
+	  match f with
+	  | "key" -> if v < Array.length keys then sel_key := v
+	  | "scale" ->  if v < Array.length scales then sel_scale := v
+	  | "fret" ->  if v < 19 then sel_fret := v
+	  | "instr" -> if v < Array.length instruments then sel_instr := v
+	  | "skip" -> if v < 6 then sel_skip := v
+	  |  _ -> ()
+      with
+      | _ -> ()
+    )
+    | _ -> () (* Not valid *)
+  ) fields
+
+let setup () =
+  parse_fragment ();
+
   let d = Html.document in
   let div =
     Js.Opt.get (d##getElementById(Js.string "scales"))
@@ -132,6 +214,8 @@ let _ =
   for k = 0 to Array.length keys - 1  do
     let s = Html.createOption d in
     append_text d s keys.(k);
+    if k = !sel_key then
+      s##selected <- true;
     s##value <- js (string_of_int k);
     Dom.appendChild key s
   done;
@@ -141,14 +225,18 @@ let _ =
     let (name, _, _) = scales.(k) in
     let s = Html.createOption d in
     append_text d s name;
+    if k = !sel_scale then
+      s##selected <- true;
     s##value <- js (string_of_int k);
     Dom.appendChild scale s
   done;
   Dom.appendChild control scale;
   let fret = Html.createSelect ~name:(Js.string "fret") d in
-  for k = 0 to 24  do
+  for k = 0 to 19  do
     let s = Html.createOption d in
     append_text d s (string_of_int k);
+    if k = !sel_fret then
+      s##selected <- true;
     s##value <- js (string_of_int k);
     Dom.appendChild fret s
   done;
@@ -159,22 +247,36 @@ let _ =
     let name, _ = instruments.(k) in
     let s = Html.createOption d in
     append_text d s name;
+    if k = !sel_instr then
+      s##selected <- true;
     s##value <- js (string_of_int k);
     Dom.appendChild instrument s
   done;
   Dom.appendChild control instrument;
+
+  let skip_l = Html.createLabel d in
+  skip_l##htmlFor <- Js.string "skip";
+  append_text d skip_l " Skip: ";
+  Dom.appendChild control skip_l;
 
   let skip = Html.createSelect ~name:(Js.string "skip") d in
   for k = 0 to 5  do
     let s = Html.createOption d in
     let v = string_of_int k in
     append_text d s v;
+    if k = !sel_skip then
+      s##selected <- true;
     s##value <- js v;
     Dom.appendChild skip s
   done;
   Dom.appendChild control skip;
 
-  let redraw = draw_scale d result key scale fret instrument skip in
+  let link = Html.createA d in
+  link##href <- js "#";
+  append_text d link "Link";
+  Dom.appendChild div link;
+
+  let redraw = draw_scale d result link key scale fret instrument skip in
   key##onchange <- (Html.handler (fun _ -> redraw ()));
   scale##onchange <- (Html.handler (fun _ -> redraw ()));
   fret##onchange <- (Html.handler (fun _ -> redraw ()));
@@ -182,4 +284,14 @@ let _ =
   skip##onchange <- (Html.handler (fun _ -> redraw ()));
   redraw ()
 
-     
+let restart _ =
+  let d = Html.document in
+  let div =
+    Js.Opt.get (d##getElementById(Js.string "scales"))
+      (fun () -> assert false) in
+  clear_children div;
+  setup ()
+
+let _ =
+  Html.window##onhashchange <- Html.handler restart;
+  setup ()
