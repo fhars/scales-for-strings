@@ -93,18 +93,21 @@ let concat delim l =
   | [] -> ""
   | s::l' -> concat_r s l'
 
+let rec rep i n =
+  if n = 0 then [] else i::(rep i (n - 1))
+
 let draw_scale document table link key' scale' fret' instr' skip' _ =
   let tbody = Html.createTbody document in
   let key = value_or_zero key'
   and scale_nr = value_or_zero scale'
   and instr = value_or_zero instr'
   and fret = value_or_zero fret'
-  and skip = value_or_zero skip' in
-
-  let name, _, scale = scales.(scale_nr)
-  and instr_name, instrument = instruments.(instr)
+  and skip = value_or_zero skip'
   and left_handed = false in
 
+  let name, _, scale = scales.(scale_nr)
+  and instr_name, instrument = instruments.(instr) in
+  let skips = rep skip (List.length instrument) in
   let settings = ref [] in
   if key <> 0 then
     settings := ("key=" ^ (string_of_int key)) :: !settings;
@@ -128,7 +131,7 @@ let draw_scale document table link key' scale' fret' instr' skip' _ =
      with
      | _ -> () (* Stupid old IE *)
     ));
-  let width, filtered = generate_scale instrument key scale fret skip in
+  let width, filtered = generate_scale instrument key scale fret skips in
   let nrs = Array.create 12 0 in
   List.iteri (fun i off -> let ix = (key + off) mod 12 in nrs.(ix) <- i + 1) scale;
   let filtered, instrument =

@@ -98,16 +98,16 @@ let rec range from width =
 
 let in_range from width notes = List.filter (fun i -> S.mem (i mod 12) notes) (range from width)
 
-let rec filter notes instrument max_diff skip accum_skip =
-  match instrument with
-  | [] -> []
-  | [str] -> [in_range (accum_skip + str) (max_diff + skip) notes]
-  | str::(str' :: _ as strs') -> 
-    in_range (accum_skip + str) (str' - str + skip) notes :: filter notes strs' max_diff skip (accum_skip + skip)
+let rec filter notes instrument max_diff skips accum_skip =
+  match instrument, skips with
+  | [], [] -> []
+  | [str], [skip] -> [in_range (accum_skip + str) (max_diff + skip) notes]
+  | str::(str' :: _ as strs'),  skip::skips' ->
+    in_range (accum_skip + str) (str' - str + skip) notes :: filter notes strs' max_diff skips' (accum_skip + skip)
+  | _ -> assert false
 
-
-let generate_scale instrument key scale offset skip =
+let generate_scale instrument key scale offset skips =
   let notes = of_list (transpose key scale)
   and width = max_diff instrument in
-  let filtered = filter notes instrument width skip offset in
+  let filtered = filter notes instrument width skips offset in
   width, filtered
