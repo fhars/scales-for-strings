@@ -162,7 +162,7 @@ let draw_scale document table link key' scale' fret' instr' skip' _ =
     else
       List.rev filtered, List.rev instrument
   in
-  let length = max 19 (fret + width + sum skips) in
+  let length = max 19 (fret + width + sum skips + 1) in
   let tr = Html.createTr document
   and td = Html.createTd document in
   Dom.appendChild tr td;
