@@ -216,7 +216,7 @@ let parse_fragment () =
 	  | "scale" ->  if v < Array.length scales then sel_scale := v
 	  | "fret" ->  if v < 19 then sel_fret := v
 	  | "instr" -> if v < Array.length instruments then sel_instr := v
-	  | "skip" -> if v < 6 then sel_skip := v
+	  | "skip" -> if v < Array.length skip_names then sel_skip := v
 	  |  _ -> ()
       with
       | _ -> ()
