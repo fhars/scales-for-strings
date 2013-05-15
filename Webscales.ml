@@ -111,6 +111,8 @@ let oct_per_two instrument =
   | start :: instr -> oct_r start instr
   | _ -> []
 
+let sum = List.fold_left ( + ) 0
+
 let draw_scale document table link key' scale' fret' instr' skip' _ =
   let tbody = Html.createTbody document in
   let key = value_or_zero key'
@@ -160,7 +162,7 @@ let draw_scale document table link key' scale' fret' instr' skip' _ =
     else
       List.rev filtered, List.rev instrument
   in
-  let length = max 19 (fret + width + skip * (List.length instrument)) in
+  let length = max 19 (fret + width + sum skips) in
   let tr = Html.createTr document
   and td = Html.createTd document in
   Dom.appendChild tr td;
