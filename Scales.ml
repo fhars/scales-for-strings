@@ -103,7 +103,8 @@ let rec filter notes instrument max_diff skips accum_skip =
   | [], [] -> []
   | [str], [skip] -> [in_range (accum_skip + str) (max_diff + skip) notes]
   | str::(str' :: _ as strs'),  skip::skips' ->
-    in_range (accum_skip + str) (str' - str + skip) notes :: filter notes strs' max_diff skips' (accum_skip + skip)
+    let off = (str' - str + skip) in
+    in_range (accum_skip + str) off notes :: filter notes strs' (max off max_diff) skips' (accum_skip + skip)
   | _ -> assert false
 
 let generate_scale instrument key scale offset skips =
