@@ -39,7 +39,8 @@ let clear_children elt =
   done
 
 let value_or_zero elt =
-  try int_of_string (Js.to_string elt##value) with _ -> 0
+  let v = try int_of_string (Js.to_string elt##value) with _ -> 0 in
+  if v >= 0 then v else 0
 
 let rec draw_frets document nrs str tr length fret filtered =
   if fret <= length then
