@@ -94,8 +94,22 @@ let concat delim l =
   | [] -> ""
   | s::l' -> concat_r s l'
 
+let skip_names = [| "0"; "1"; "2"; "3"; "4"; "5"; "oct/2" |]
+
 let rec rep i n =
   if n = 0 then [] else i::(rep i (n - 1))
+
+let oct_per_two instrument =
+  let rec oct_r start instr =
+    match instr with
+    | _ :: str :: instr' ->
+       0 :: (fret_for_note str start) :: oct_r str instr'
+    | [_]  -> [ 0; 0 ]
+    | [] -> [ 0 ]
+  in
+  match instrument with
+  | start :: instr -> oct_r start instr
+  | _ -> []
 
 let draw_scale document table link key' scale' fret' instr' skip' _ =
   let tbody = Html.createTbody document in
@@ -108,7 +122,12 @@ let draw_scale document table link key' scale' fret' instr' skip' _ =
 
   let name, _, scale = scales.(scale_nr)
   and instr_name, instrument = instruments.(instr) in
-  let skips = rep skip (List.length instrument) in
+  let skips = if skip <= 5 then
+      rep skip (List.length instrument)
+    else
+      oct_per_two instrument
+  in
+
   let settings = ref [] in
   if key <> 0 then
     settings := ("key=" ^ (string_of_int key)) :: !settings;
@@ -264,13 +283,12 @@ let setup () =
   Dom.appendChild control skip_l;
 
   let skip = Html.createSelect ~name:(Js.string "skip") d in
-  for k = 0 to 5  do
+  for k = 0 to Array.length skip_names - 1 do
     let s = Html.createOption d in
-    let v = string_of_int k in
-    append_text d s v;
+    append_text d s skip_names.(k);
     if k = !sel_skip then
       s##selected <- true;
-    s##value <- js v;
+    s##value <- js (string_of_int k);
     Dom.appendChild skip s
   done;
   Dom.appendChild control skip;
