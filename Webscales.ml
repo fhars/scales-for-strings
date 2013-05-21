@@ -30,11 +30,12 @@ let black_numbers = [| "X";"✪";"➋";"➌";"➍";"➎";"➏";"➐";"➑";"➒"
 
 let scale_groups = [
   "Standard Modes", [0;1;2;3;4;5;6];
-  "Melodic Minor Modes", [7;8];
-  "Hamonic Minor Modes", [];
-  "Pentatonic Modes", [];
-  "Blues Scales", [];
-  "Other Scales", [9;10];
+  "Melodic Minor Modes", [7;8;9;10;11;12;13];
+  "Hamonic Minor Modes", [14;15;16;17;18;19;20];
+  "Double Harmonic Modes", [21;22;23;24;25;26;27];
+  "Pentatonic Modes", [28;29;30;31;32];
+  "Blues & Bebop", [33;34;35;36;37;38;39];
+  "Other Scales", [40;41;42;43;44;45;46];
 ]
 
 let js = Js.string

@@ -21,17 +21,59 @@
 *)
 
 let scales = [|
-  "Lydian",     5, [ 0; 2; 4; 6; 7; 9; 11 ];
-  "Ionian (Major)", 0, [ 0; 2; 4; 5; 7; 9; 11 ];
-  "Mixolydian", 7, [ 0; 2; 4; 5; 7; 9; 10 ];
-  "Dorian",     2, [ 0; 2; 3; 5; 7; 9; 10 ]; 
-  "Aeolian (Minor)", 9, [ 0; 2; 3; 5; 7; 8; 10 ];
-  "Phrygian",   4, [ 0; 1; 3; 5; 7; 8; 10 ];
-  "Locrian",   11, [ 0; 1; 3; 5; 6; 8; 10 ];
-  "Lydian b7",  5, [ 0; 2; 4; 6; 7; 9; 10 ];
-  "Altered",   -1, [ 0; 1; 3; 4; 6; 8; 10 ];
-  "Sym Dim",   -1, [ 0; 1; 3; 4; 6; 7; 9; 10 ];
-  "Chromatic", -1, [ 0; 1; 2; 3; 4; 5; 6; 7; 8; 9; 10; 11]
+  "Lydian",                    5, [ 0; 2; 4; 6; 7; 9; 11 ];
+  "Ionian (Major)",            0, [ 0; 2; 4; 5; 7; 9; 11 ];
+  "Mixolydian",                7, [ 0; 2; 4; 5; 7; 9; 10 ];
+  "Dorian",                    2, [ 0; 2; 3; 5; 7; 9; 10 ];
+  "Aeolian (Minor)",           9, [ 0; 2; 3; 5; 7; 8; 10 ];
+  "Phrygian",                  4, [ 0; 1; 3; 5; 7; 8; 10 ];
+  "Locrian",                  11, [ 0; 1; 3; 5; 6; 8; 10 ];
+
+  "Asc. melodic minor",	      -1, [ 0; 2; 3; 5; 7; 9; 11 ];
+  "Phrygian ♮6 ",             -1, [ 0; 1; 3; 5; 7; 9; 10 ];
+  "Lydian ♯5",                -1, [ 0; 2; 4; 6; 8; 9; 11 ];
+  "Lydian ♭7",                 5, [ 0; 2; 4; 6; 7; 9; 10 ];
+  "Mixolydian ♭6",            -1, [ 0; 2; 4; 5; 7; 8; 10 ];
+  "Half-diminished",   	      -1, [ 0; 2; 3; 5; 6; 8; 10 ];
+  "Altered",           	      -1, [ 0; 1; 3; 4; 6; 8; 10 ];
+
+  "Harmonic minor",    	      -1, [ 0; 2; 3; 5; 7; 8; 11 ];
+  "Locrian ♮6",               -1, [ 0; 1; 3; 5; 6; 9; 10 ];
+  "Ionian ♯5",                -1, [ 0; 2; 4; 5; 8; 9; 11 ];
+  "Ukrainian minor",          -1, [ 0; 2; 3; 6; 7; 9; 10 ];
+  "Phrygian dominant",        -1, [ 0; 1; 4; 5; 7; 8; 10 ];
+  "Lydian ♯2",                -1, [ 0; 3; 4; 6; 7; 9; 11 ];
+  "Super Locrian diminished", -1, [ 0; 1; 3; 4; 6; 8; 9 ];
+
+  "Double harmonic scale",    -1, [ 0; 1; 4; 5; 7; 8; 11 ];
+  "Lydian ♯2 ♯6",             -1, [ 0; 3; 4; 6; 7; 10; 11 ];
+  "Phrygian ♭4 ♭♭7",          -1, [ 0; 1; 3; 4; 7; 8; 9 ];
+  "Hungarian minor",          -1, [ 0; 2; 3; 6; 7; 8; 11 ];
+  "Locrian ♮6 ♯3",            -1, [ 0; 1; 4; 5; 6; 9; 10 ];
+  "Harmonic Major ♯5 ♯2",     -1, [ 0; 3; 4; 5; 8; 9; 11 ];
+  "Locrian ♭♭3 ♭♭7",          -1, [ 0; 1; 2; 5; 6; 8; 9 ];
+
+  "Minor Pentatonic",         -1, [ 0; 3; 5; 7; 10 ];
+  "Major Pentatonic",         -1, [ 0; 2; 4; 7; 9 ];
+  "Egyptian, suspended",      -1, [ 0; 2; 5; 7; 10 ];
+  "Blues minor / Man Gong",   -1, [ 0; 3; 5; 8; 10 ];
+  "Blues major / Ritusen",    -1, [ 0; 2; 5; 7; 9 ];
+
+  "Blues minor",              -1, [ 0; 3; 5; 6; 7; 10 ];
+  "Blues major",              -1, [ 0; 2; 3; 4; 7; 9 ];
+  "Blues (heptatonic)",       -1, [ 0; 2; 3; 5; 6; 9; 10 ];
+  "Chromatic Blues",          -1, [ 0; 2; 3; 4; 5; 7; 9; 10; 11 ];
+  "Major bebop",              -1, [ 0; 2; 4; 5; 7; 8; 9; 11 ];
+  "Dominant bebop (asc.)",    -1, [ 0; 2; 4; 5; 7; 9; 10; 11 ];
+  "Dominant bebop (desc.)",   -1, [ 12; 10; 9; 8; 7; 5; 3; 2 ];
+
+  "Aeolian ♯4",               -1, [ 0; 2; 3; 6; 7; 8; 10 ];
+  "Neapolitan minor (asc.)",  -1, [ 0; 1; 3; 5; 7; 8; 11 ];
+  "Neapolitan minor (desc.)", -1, [ 12; 10; 8; 7; 5; 3; 1 ];
+  "Neopolitan major",         -1, [ 0; 1; 3; 5; 7; 9; 11 ];
+  "Sym. Diminished h-w",      -1, [ 0; 1; 3; 4; 6; 7; 9; 10 ];
+  "Sym. Diminished w-h",      -1, [ 0; 2; 3; 5; 6; 8; 9; 11 ];
+  "Chromatic",                -1, [ 0; 1; 2; 3; 4; 5; 6; 7; 8; 9; 10; 11 ]
 	     |] 
 
 let keys = [| "C"; "Db"; "D"; "Eb"; "E"; "F"; "F#/Gb"; "G"; "Ab"; "A"; "Bb"; "B" |]
