@@ -104,7 +104,7 @@ let concat delim l =
   | [] -> ""
   | s::l' -> concat_r s l'
 
-let skip_names = [| "0"; "1"; "2"; "3"; "4"; "5"; "oct/2" |]
+let skip_names = [| "0"; "1"; "2"; "3"; "4"; "5"; "oct/2";"11121" |]
 
 let rec rep i n =
   if n = 0 then [] else i::(rep i (n - 1))
@@ -122,6 +122,11 @@ let oct_per_two instrument =
   | _ -> []
 
 let sum = List.fold_left ( + ) 0
+let rec drop n l =
+  if n = 0 then l else
+    match l with
+    | [] -> l
+    | _ :: tl -> drop (n - 1) tl
 
 let draw_scale document table link key' scale' fret' instr' skip' _ =
   let tbody = Html.createTbody document in
@@ -136,8 +141,10 @@ let draw_scale document table link key' scale' fret' instr' skip' _ =
   and instr_name, instrument = instruments.(instr) in
   let skips = if skip <= 5 then
       rep skip (List.length instrument)
-    else
+    else if skip = 6 then
       oct_per_two instrument
+    else
+      drop (7 - List.length instrument) [1;1;1;1;2;1;1]
   in
 
   let settings = ref [] in
