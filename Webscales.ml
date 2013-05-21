@@ -28,6 +28,14 @@ open Scales
 let open_numbers = [| "·";"➀";"➁";"➂";"➃";"➄";"➅";"➆";"➇";"➈";"➉" |]
 let black_numbers = [| "X";"✪";"➋";"➌";"➍";"➎";"➏";"➐";"➑";"➒";"➓" |]
 
+let scale_groups = [
+  "Standard Modes", [0;1;2;3;4;5;6];
+  "Melodic Minor Modes", [7;8;9];
+  "Hamonic Minor Modes", [];
+  "Pentatonic Modes", [];
+  "Blues Scales", [];
+]
+
 let js = Js.string
 let append_text document e s = Dom.appendChild e (document##createTextNode (js s))
 let set_value e v = e##value##set (js (string_of_int v)) 
@@ -246,15 +254,20 @@ let setup () =
   done;
   Dom.appendChild control key;
   let scale = Html.createSelect ~name:(Js.string "scale") d in
-  for k = 0 to Array.length scales - 1  do
-    let (name, _, _) = scales.(k) in
-    let s = Html.createOption d in
-    append_text d s name;
-    if k = !sel_scale then
-      s##selected <- true;
-    s##value <- js (string_of_int k);
-    Dom.appendChild scale s
-  done;
+  List.iter (fun (name, sc) ->
+    let group = Html.createOptgroup d in
+    group##label <- js name;
+    List.iter (fun k ->
+      let (name, _, _) = scales.(k) in
+      let s = Html.createOption d in
+      append_text d s name;
+      if k = !sel_scale then
+	s##selected <- true;
+      s##value <- js (string_of_int k);
+      Dom.appendChild group s
+    ) sc;
+    Dom.appendChild scale group;
+  ) scale_groups;
   Dom.appendChild control scale;
   let fret = Html.createSelect ~name:(Js.string "fret") d in
   for k = 0 to 19  do
