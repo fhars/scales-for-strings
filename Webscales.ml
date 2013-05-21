@@ -25,15 +25,16 @@ module Html = Dom_html
 
 open Scales
 
-let open_numbers = [| "·";"➀";"➁";"➂";"➃";"➄";"➅";"➆";"➇";"➈";"➉" |]
-let black_numbers = [| "X";"✪";"➋";"➌";"➍";"➎";"➏";"➐";"➑";"➒";"➓" |]
+let open_numbers = [| "·";"➀";"➁";"➂";"➃";"➄";"➅";"➆";"➇";"➈";"➉";"⑪";"⑫" |]
+let black_numbers = [| "X";"✪";"➋";"➌";"➍";"➎";"➏";"➐";"➑";"➒";"➓";"⓫";"⓬" |]
 
 let scale_groups = [
   "Standard Modes", [0;1;2;3;4;5;6];
-  "Melodic Minor Modes", [7;8;9];
+  "Melodic Minor Modes", [7;8];
   "Hamonic Minor Modes", [];
   "Pentatonic Modes", [];
   "Blues Scales", [];
+  "Other Scales", [9;10];
 ]
 
 let js = Js.string
