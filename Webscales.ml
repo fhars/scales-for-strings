@@ -40,7 +40,7 @@ let scale_groups = [
   "Pentatonic Modes", enum 28 32;
   "Blues & Bebop", enum 33 39;
   "Modes of Limited Transposition", enum 40 61;
-  "Other Scales", enum 62 66;
+  "Other Scales", enum 62 67;
 ]
 
 let js = Js.string

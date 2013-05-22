@@ -29,7 +29,7 @@ let scales = [|
   "Phrygian",                  4, [ 0; 1; 3; 5; 7; 8; 10 ];
   "Locrian",                  11, [ 0; 1; 3; 5; 6; 8; 10 ];
 
-  "Asc. melodic minor",	      -1, [ 0; 2; 3; 5; 7; 9; 11 ];
+  "Melodic minor (asc.)",     -1, [ 0; 2; 3; 5; 7; 9; 11 ];
   "Phrygian ♮6 ",             -1, [ 0; 1; 3; 5; 7; 9; 10 ];
   "Lydian ♯5",                -1, [ 0; 2; 4; 6; 8; 9; 11 ];
   "Lydian ♭7",                 5, [ 0; 2; 4; 6; 7; 9; 10 ];
@@ -90,6 +90,7 @@ let scales = [|
   "Seventh mode / 4",           -1, [ 0; 2; 3; 4; 5; 6; 8; 9; 10; 11 ];
   "Seventh mode / 5",           -1, [ 0; 1; 2; 3; 4; 6; 7; 8; 9; 10 ];
 
+  "Melodic minor (desc.)",    -1, [12; 10; 8; 7; 5; 3; 2 ];
   "Aeolian ♯4",               -1, [ 0; 2; 3; 6; 7; 8; 10 ];
   "Neapolitan minor (asc.)",  -1, [ 0; 1; 3; 5; 7; 8; 11 ];
   "Neapolitan minor (desc.)", -1, [ 12; 10; 8; 7; 5; 3; 1 ];
