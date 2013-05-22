@@ -67,9 +67,9 @@ let scales = [|
   "Dominant bebop (asc.)",    -1, [ 0; 2; 4; 5; 7; 9; 10; 11 ];
   "Dominant bebop (desc.)",   -1, [ 12; 10; 9; 8; 7; 5; 3; 2 ];
 
-  "Whole tone",                 -1, [ 0; 2; 4; 6; 8; 10 ];
-  "Sym. Diminished half-whole", -1, [ 0; 1; 3; 4; 6; 7; 9; 10 ];
+  "Whole tone (First mode)",    -1, [ 0; 2; 4; 6; 8; 10 ];
   "Sym. Diminished whole-half", -1, [ 0; 2; 3; 5; 6; 8; 9; 11 ];
+  "Sym. Diminished half-whole", -1, [ 0; 1; 3; 4; 6; 7; 9; 10 ];
   "Third mode / 1",             -1, [ 0; 2; 3; 4; 6; 7; 8; 10; 11 ];
   "Third mode / 2",             -1, [ 0; 1; 2; 4; 5; 6; 8; 9; 10 ];
   "Third mode / 3",             -1, [ 0; 1; 3; 4; 5; 7; 8; 9; 11 ];
