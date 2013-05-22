@@ -28,21 +28,6 @@ open Scales
 let open_numbers = [| "·";"➀";"➁";"➂";"➃";"➄";"➅";"➆";"➇";"➈";"➉";"⑪";"⑫" |]
 let black_numbers = [| "X";"✪";"➋";"➌";"➍";"➎";"➏";"➐";"➑";"➒";"➓";"⓫";"⓬" |]
 
-let rec enum from_n to_n =
-  if from_n > to_n then []
-  else from_n :: enum (from_n + 1) to_n
-
-let scale_groups = [
-  "Standard Modes", enum 0 6;
-  "Melodic Minor Modes", enum 7 13;
-  "Hamonic Minor Modes", enum 14 20;
-  "Double Harmonic Modes", enum 21 27;
-  "Pentatonic Modes", enum 28 32;
-  "Blues & Bebop", enum 33 39;
-  "Modes of Limited Transposition", enum 40 61;
-  "Other Scales", enum 62 67;
-]
-
 let js = Js.string
 let append_text document e s = Dom.appendChild e (document##createTextNode (js s))
 let set_value e v = e##value##set (js (string_of_int v)) 

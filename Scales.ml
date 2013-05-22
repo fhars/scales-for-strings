@@ -35,7 +35,7 @@ let scales = [|
   "Lydian ♭7",                 5, [ 0; 2; 4; 6; 7; 9; 10 ];
   "Mixolydian ♭6",            -1, [ 0; 2; 4; 5; 7; 8; 10 ];
   "Half-diminished",   	      -1, [ 0; 2; 3; 5; 6; 8; 10 ];
-  "Altered",           	      -1, [ 0; 1; 3; 4; 6; 8; 10 ];
+  "Altered (Super Locrian)",  -1, [ 0; 1; 3; 4; 6; 8; 10 ];
 
   "Harmonic minor",    	      -1, [ 0; 2; 3; 5; 7; 8; 11 ];
   "Locrian ♮6",               -1, [ 0; 1; 3; 5; 6; 9; 10 ];
@@ -97,6 +97,21 @@ let scales = [|
   "Neopolitan major",         -1, [ 0; 1; 3; 5; 7; 9; 11 ];
   "Chromatic",                -1, [ 0; 1; 2; 3; 4; 5; 6; 7; 8; 9; 10; 11 ]
 	     |] 
+
+let rec enum from_n to_n =
+  if from_n > to_n then []
+  else from_n :: enum (from_n + 1) to_n
+
+let scale_groups = [
+  "Standard Modes", enum 0 6;
+  "Melodic Minor Modes", enum 7 13;
+  "Hamonic Minor Modes", enum 14 20;
+  "Double Harmonic Modes", enum 21 27;
+  "Pentatonic Modes", enum 28 32;
+  "Blues & Bebop", enum 33 39;
+  "Modes of Limited Transposition", enum 40 61;
+  "Other Scales", enum 62 67;
+]
 
 let keys = [| "C"; "Db"; "D"; "Eb"; "E"; "F"; "F#/Gb"; "G"; "Ab"; "A"; "Bb"; "B" |]
 
