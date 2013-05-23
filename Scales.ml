@@ -53,11 +53,17 @@ let scales = [|
   "Harmonic Major ♯5 ♯2",     -1, [ 0; 3; 4; 5; 8; 9; 11 ];
   "Locrian ♭♭3 ♭♭7",          -1, [ 0; 1; 2; 5; 6; 8; 9 ];
 
-  "Minor Pentatonic",         -1, [ 0; 3; 5; 7; 10 ];
-  "Major Pentatonic",         -1, [ 0; 2; 4; 7; 9 ];
-  "Egyptian, suspended",      -1, [ 0; 2; 5; 7; 10 ];
-  "Blues minor / Man Gong",   -1, [ 0; 3; 5; 8; 10 ];
-  "Blues major / Ritusen",    -1, [ 0; 2; 5; 7; 9 ];
+  "Minor Pentatonic",          -1, [ 0; 3; 5; 7; 10 ];
+  "Major Pentatonic",          -1, [ 0; 2; 4; 7; 9 ];
+  "Egyptian, suspended",       -1, [ 0; 2; 5; 7; 10 ];
+  "Blues minor / Man Gong",    -1, [ 0; 3; 5; 8; 10 ];
+  "Blues major / Ritusen",     -1, [ 0; 2; 5; 7; 9 ];
+
+  "In (Sakura)/ Hirajōshi",     -1, [ 0; 1; 5; 7; 8 ];
+  "Hirajōshi, 2nd mode",        -1, [ 0; 4; 6; 7; 11 ];
+  "Hirajōshi (Kostka)",         -1, [ 0; 2; 3; 7; 8 ];
+  "Hirajōshi (Sachs) / Iwato",  -1, [ 0; 1; 5; 6; 10 ];
+  "Hirajōshi, 5th mode",        -1, [ 0; 4; 5; 9; 11 ];
 
   "Blues minor",              -1, [ 0; 3; 5; 6; 7; 10 ];
   "Blues major",              -1, [ 0; 2; 3; 4; 7; 9 ];
@@ -107,10 +113,10 @@ let scale_groups = [
   "Melodic Minor Modes", enum 7 13;
   "Hamonic Minor Modes", enum 14 20;
   "Double Harmonic Modes", enum 21 27;
-  "Pentatonic Modes", enum 28 32;
-  "Blues & Bebop", enum 33 39;
-  "Modes of Limited Transposition", enum 40 61;
-  "Other Scales", enum 62 67;
+  "Pentatonic Modes", enum 28 37;
+  "Blues & Bebop", enum 38 44;
+  "Modes of Limited Transposition", enum 45 66;
+  "Other Scales", enum 67 72;
 ]
 
 let keys = [| "C"; "Db"; "D"; "Eb"; "E"; "F"; "F#/Gb"; "G"; "Ab"; "A"; "Bb"; "B" |]
